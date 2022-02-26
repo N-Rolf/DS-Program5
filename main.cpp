@@ -6,16 +6,21 @@ using namespace std;
 void insertionSort(int* , int);
 void mergeSort(int *, int const, int);
 void merge(int *array, int const left, int const mid, int const right);
-void quickSort(int *, int);
-
-int count = 0;
+void quickSort(int *, int, int);
+int partition(int *list, int low, int high);
+void swap(int* a, int* b);
+void print(int *list, int n, bool t);
 
 int main()
 {
-    int testArray[5] = {3, 5, 1, 2, 4};
-
+    clock_t time1, time2;
+    double time_diff;
+    int sum = 0;
+    int SIZE = 0;
     //prompt user for size
-    int SIZE = 15;
+    cout << "Enter a number of integers to fill array with: " << endl;
+    cin >> SIZE;
+    cout << "now testing sort algorithms with " << SIZE << " elements...\n" << endl;
 
     //create & copy array
     int i = 0;
@@ -33,52 +38,41 @@ int main()
         arrayB[i] = arrayA[i];
         arrayC[i] = arrayA[i];
     }
-    int n = SIZE;
-    //print array if less than 100 elems
-    if(n < 101)
-    {
-        cout << "BEFORE: " << endl;
-        for(i=0; i<SIZE; i++)
-        {
-            cout << arrayB[i] << endl;
-        }
-    }
 
-    //insertionSort(arrayA, SIZE);
-    //mergeSort(arrayB, 0, SIZE - 1);
-    quickSort(arrayC, SIZE);
+    //insertion sort
+    print(arrayA, SIZE, 0);
+    time1 = clock();
+    insertionSort(arrayA, SIZE);
+    time2 = clock();
+    print(arrayA, SIZE, 1);
+    time_diff = (static_cast <double> (time2) - static_cast <double> (time1) ) / CLOCKS_PER_SEC;
+    cout << "Insertion Sort Elapsed Time: " << time_diff  << " seconds" << endl;
 
-    //print sorted array if less than 100 elems
-    if(n < 101)
-    {
-        cout << "\nAFTER: " << endl;
-        for(i=0; i<SIZE; i++)
-        {
-            cout << arrayB[i] << endl;
-        }
-    }
+    //merge sort
+    print(arrayB, SIZE, 0);
+    time1 = clock();
+    mergeSort(arrayB, 0, SIZE - 1);
+    time2 = clock();
+    print(arrayB, SIZE, 1);
+    time_diff = (static_cast <double> (time2) - static_cast <double> (time1) ) / CLOCKS_PER_SEC;
+    cout << "Merge Sort Elapsed Time: " << time_diff  << " seconds" << endl;
+
+    //quick sort
+    print(arrayA, SIZE, 0);
+    time1 = clock();
+    quickSort(arrayC, 0, SIZE - 1);
+    time2 = clock();
+    print(arrayA, SIZE, 1);
+    time_diff = (static_cast <double> (time2) - static_cast <double> (time1) ) / CLOCKS_PER_SEC;
+    cout << "Quick Sort Elapsed Time: " << time_diff  << " seconds" << endl;
 
     return 0;
 }
 
 void insertionSort(int *list, int n)
 {
-    clock_t time1, time2;
-    double time_diff;
-    int sum = 0;
     int key, i, j;
-    //print array if less than 100 elems
-    if(n < 101)
-    {
-        cout << "BEFORE: " << endl;
-        for(i=0; i<n; i++)
-        {
-            cout << list[i] << endl;
-        }
-    }
     
-    //insert sort
-    time1 = clock();
     for(i=1; i<n; i++)
     {
         key = list[i];
@@ -90,23 +84,6 @@ void insertionSort(int *list, int n)
             j = j-1;
         }
         list[j+1] = key;
-    }
-    time2 = clock();
-
-    //cout << "Time 1: " << time1 << endl;
-    //cout << "Time 2: " << time2 << endl;
-
-    time_diff = (static_cast <double> (time2) - static_cast <double> (time1) ) / CLOCKS_PER_SEC;
-    cout << "Insertion Sort Elapsed Time: " << time_diff  << " seconds" << endl;;
-
-    //print sorted array if less than 100 elems
-    if(n < 101)
-    {
-        cout << "\nAFTER: " << endl;
-        for(i=0; i<n; i++)
-        {
-            cout << list[i] << endl;
-        }
     }
 }
 
@@ -192,41 +169,51 @@ void merge(int *array, const int left, const int mid, const int right)
     
 }
 
-void quickSort(int *list, int n)
+void quickSort(int *list, int low, int high)
 {
-    clock_t time1, time2;
-    double time_diff;
-    int sum = 0;
-    int i;
-    //print array if less than 100 elems
-    if(n < 101)
+    if(low < high)
     {
-        cout << "BEFORE: " << endl;
-        for(i=0; i<n; i++)
+        int index = partition(list, low, high);
+
+        quickSort(list, low, index-1);
+        quickSort(list, index+1, high);
+    }
+}
+
+int partition(int *list, int low, int high)
+{
+    int pivot = list[high];
+    int i = (low-1);
+
+    for(int j=low; j <= high-1; j++)
+    {
+        if(list[j] < pivot)
         {
-            cout << list[i] << endl;
+            i++;
+            swap(&list[i], &list[j]);
         }
     }
-    
-    //quick sort
-    time1 = clock();
-    for(i=1; i<n; i++)
-    {
-       
-    }
-    time2 = clock();
+    swap(&list[i+1], &list[high]);
+    return (i+1);
+}
 
-    //cout << "Time 1: " << time1 << endl;
-    //cout << "Time 2: " << time2 << endl;
+void swap(int* a, int* b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
-    time_diff = (static_cast <double> (time2) - static_cast <double> (time1) ) / CLOCKS_PER_SEC;
-    cout << "Insertion Sort Elapsed Time: " << time_diff  << " seconds" << endl;;
-
-    //print sorted array if less than 100 elems
+void print(int *list, int n, bool t)
+{
     if(n < 101)
     {
-        cout << "\nAFTER: " << endl;
-        for(i=0; i<n; i++)
+        if(t==0)
+            cout << "PRE-SORT..." << endl;
+        else
+            cout << "POST-SORT..." << endl;
+
+        for(int i=0; i<n; i++)
         {
             cout << list[i] << endl;
         }
